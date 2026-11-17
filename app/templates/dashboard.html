@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Hi, {{ current_user.full_name }}</h1>
+        <p>This is your customer dashboard.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <h2 class="section-title">Upcoming appointments</h2>
+        {% if upcoming %}
+        <div class="appt-list">
+            {% for a in upcoming %}
+            <article class="appt">
+                <div>
+                    <h3>{{ a.service_name }} <span class="status status-{{ a.status }}">{{ a.status|capitalize }}</span></h3>
+                    <p>{{ a.appointment_date.strftime('%A, %d %B %Y') }} &middot; {{ a.start_label }} - {{ a.end_label }}</p>
+                    <p>with {{ a.barber_name }} &middot; Ref: {{ a.booking_reference }}</p>
+                </div>
+                <form method="post" action="{{ url_for('booking.cancel', appointment_id=a.id) }}"
+                      onsubmit="return confirm('Cancel this appointment?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline btn-small">Cancel</button>
+                </form>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-note">You have no upcoming appointments.</p>
+        {% endif %}
+
+        <a class="btn btn-primary" href="{{ url_for('booking.choose_service') }}">Book an appointment</a>
+
+        {# Text and colour for the feedback label, by feedback status #}
+        {% set feedback_text = {'pending': 'Feedback: pending review',
+                                'approved': 'Feedback: published',
+                                'rejected': 'Feedback: not published'} %}
+        {% set feedback_class = {'pending': 'status-pending',
+                                 'approved': 'status-confirmed',
+                                 'rejected': 'status-cancelled'} %}
+
+        {% if past %}
+        <h2 class="section-title section-gap">Past and cancelled</h2>
+        <div class="appt-list">
+            {% for a in past %}
+            <article class="appt">
+                <div>
+                    <h3>{{ a.service_name }} <span class="status status-{{ a.status }}">{{ a.status|capitalize }}</span></h3>
+                    <p>{{ a.appointment_date.strftime('%A, %d %B %Y') }} &middot; {{ a.start_label }} - {{ a.end_label }}</p>
+                    <p>with {{ a.barber_name }} &middot; Ref: {{ a.booking_reference }}</p>
+                </div>
+
+                {% if a.status == 'completed' %}
+                <div class="appt-actions">
+                    {% if a.feedback_status %}
+                    <span class="status {{ feedback_class[a.feedback_status] }}">{{ feedback_text[a.feedback_status] }}</span>
+                    {% else %}
+                    <a class="btn btn-primary btn-small"
+                       href="{{ url_for('main.feedback_new', appointment_id=a.id) }}">Leave feedback</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h2 class="section-title section-gap">My account</h2>
+        <div class="grid">
+            <article class="card">
+                <h3>Account details</h3>
+                <p><strong>Name:</strong> {{ current_user.full_name }}</p>
+                <p><strong>Email:</strong> {{ current_user.email }}</p>
+                <a class="card-link" href="{{ url_for('auth.profile') }}">Edit profile</a>
+            </article>
+
+            <article class="card">
+                <h3>Explore the shop</h3>
+                <p>See what we offer and who does it.</p>
+                <a class="card-link" href="{{ url_for('main.services') }}">View services</a>
+                &nbsp;&middot;&nbsp;
+                <a class="card-link" href="{{ url_for('main.barbers') }}">Meet the barbers</a>
+            </article>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

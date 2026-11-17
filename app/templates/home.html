@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}ClipQueue - Barbershop Digital Service Platform{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="container">
+        <p class="eyebrow">Barbershop Digital Service Platform</p>
+        <h1>Find the right barber for the cut you want.</h1>
+        <p class="hero-text">
+            Browse services and prices, meet the barbers and their specialties,
+            and see who is working, all in one place.
+        </p>
+        <div class="hero-buttons">
+            <a class="btn btn-primary" href="{{ url_for('main.services') }}">Browse Services</a>
+            <a class="btn btn-outline" href="{{ url_for('main.barbers') }}">Meet the Barbers</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">What you can do with ClipQueue</h2>
+
+        <div class="grid">
+            <article class="card">
+                <h3>Explore Services</h3>
+                <p>See every service with a clear description and price, from haircuts to beard trims and coloring.</p>
+                <a class="card-link" href="{{ url_for('main.services') }}">View services &rarr;</a>
+            </article>
+
+            <article class="card">
+                <h3>Meet the Barbers</h3>
+                <p>Each barber works independently. Find out who specializes in what.</p>
+                <a class="card-link" href="{{ url_for('main.barbers') }}">View barbers &rarr;</a>
+            </article>
+
+            <article class="card">
+                <h3>Check Schedules</h3>
+                <p>See which barbers are working on which days, and during what hours.</p>
+                <a class="card-link" href="{{ url_for('main.schedules') }}">View schedules &rarr;</a>
+            </article>
+
+            <article class="card">
+                <h3>Share Feedback</h3>
+                <p>Tell the shop how your visit went so service keeps getting better.</p>
+                <a class="card-link" href="{{ url_for('main.feedback') }}">Give feedback &rarr;</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">Shop Status</h2>
+
+        {% if shop %}
+        <p class="status-box">
+            <span class="status {{ 'status-confirmed' if shop.is_open else 'status-cancelled' }}">
+                {{ 'Open' if shop.is_open else 'Closed' }}
+            </span>
+            <span>
+                {% if shop.status_note %}{{ shop.status_note }}{% elif shop.is_open %}Come in, we are open.{% else %}We are closed right now.{% endif %}
+            </span>
+        </p>
+        {% else %}
+        <p class="status-box">
+            <span class="status-dot"></span>
+            Not set yet. This will show <strong>Open</strong> or <strong>Closed</strong>
+            once the shop sets its status in the staff area.
+        </p>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

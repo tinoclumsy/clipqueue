@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Booked &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Appointment booked</h1>
+        <p>Your request has been received. Staff will confirm it.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-card">
+            <p class="field-title">Your booking reference</p>
+            <p class="reference">{{ appointment.booking_reference }}</p>
+
+            <div class="detail-list">
+                <p><strong>Service:</strong> {{ appointment.service_name }}</p>
+                <p><strong>Barber:</strong> {{ appointment.barber_name }}</p>
+                <p><strong>Date:</strong> {{ appointment.appointment_date.strftime('%A, %d %B %Y') }}</p>
+                <p><strong>Time:</strong> {{ appointment.start_label }} - {{ appointment.end_label }}</p>
+                <p><strong>Price:</strong> {{ currency }}{{ "%.2f"|format(appointment.price) }}</p>
+                <p><strong>Status:</strong> {{ appointment.status|capitalize }}</p>
+            </div>
+
+            <a class="btn btn-primary" href="{{ url_for('auth.dashboard') }}">Go to my dashboard</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

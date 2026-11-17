@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Barber and Date &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Book an Appointment</h1>
+        <p>Step 2 of 3: choose a barber and a date.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if barbers %}
+        <form class="form-card" method="get" action="{{ url_for('booking.choose_time') }}">
+            <div class="booking-summary">
+                <strong>{{ service.name }}</strong>
+                <span>{{ currency }}{{ "%.2f"|format(service.price) }} &middot; {{ service.duration_minutes }} min</span>
+            </div>
+
+            <input type="hidden" name="service_id" value="{{ service.id }}">
+
+            <p class="field-title">Choose a barber</p>
+            <label class="choice">
+                <input type="radio" name="barber_id" value="any" checked>
+                <span>Any available barber</span>
+            </label>
+            {% for barber in barbers %}
+            <label class="choice">
+                <input type="radio" name="barber_id" value="{{ barber.id }}">
+                <span>{{ barber.display_name }}</span>
+            </label>
+            {% endfor %}
+
+            <label for="date">Choose a date</label>
+            <input type="date" id="date" name="date" min="{{ min_date }}" max="{{ max_date }}" required>
+
+            <button type="submit" class="btn btn-primary">See available times</button>
+
+            <p class="form-note"><a href="{{ url_for('booking.choose_service') }}">&larr; Choose a different service</a></p>
+        </form>
+        {% else %}
+        <div class="empty-state">
+            <h2>No barbers available</h2>
+            <p>No barber offers <strong>{{ service.name }}</strong> right now.</p>
+            <a class="btn btn-outline" href="{{ url_for('booking.choose_service') }}">Choose another service</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

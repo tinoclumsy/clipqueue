@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Book an Appointment &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Book an Appointment</h1>
+        <p>Step 1 of 3: choose a service.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if services %}
+        <div class="grid">
+            {% for service in services %}
+            <article class="card">
+                <h3>{{ service.name }}</h3>
+                <p>{{ service.description or "No description yet." }}</p>
+                <div class="card-meta">
+                    <span class="price">{{ currency }}{{ "%.2f"|format(service.price) }}</span>
+                    <span class="duration">{{ service.duration_minutes }} min</span>
+                </div>
+                <a class="btn btn-outline"
+                   href="{{ url_for('booking.choose_barber_and_date', service_id=service.id) }}">Choose this service</a>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No services yet</h2>
+            <p>No services are available for booking right now.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

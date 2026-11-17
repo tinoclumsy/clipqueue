@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Accounts &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Manage Accounts</h1>
+        <p>Switch accounts on or off. A switched-off account cannot log in. Accounts are never deleted, so appointment history stays complete.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+
+        <h2 class="section-title">Staff and administrators</h2>
+
+        <div class="toolbar">
+            <a class="btn btn-primary" href="{{ url_for('admin.staff_new') }}">Add a staff account</a>
+        </div>
+
+        {% if staff %}
+        <div class="appt-list">
+            {% for u in staff %}
+            <article class="appt {{ 'is-inactive' if not u.is_active }}">
+                <div>
+                    <h3>{{ u.full_name }}
+                        <span class="status {{ 'status-confirmed' if u.is_active else 'status-cancelled' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span>
+                    </h3>
+                    <p>{{ u.role|capitalize }} &middot; {{ u.email }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    {% if u.id == current_user.id %}
+                    <span class="status status-pending">This is you</span>
+                    {% else %}
+                    <form method="post" action="{{ url_for('admin.account_toggle', user_id=u.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-small {{ 'btn-outline' if u.is_active else 'btn-primary' }}">
+                            {{ 'Deactivate' if u.is_active else 'Activate' }}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h2 class="section-title section-gap">Customers</h2>
+
+        {% if customers %}
+        <div class="appt-list">
+            {% for u in customers %}
+            <article class="appt {{ 'is-inactive' if not u.is_active }}">
+                <div>
+                    <h3>{{ u.full_name }}
+                        <span class="status {{ 'status-confirmed' if u.is_active else 'status-cancelled' }}">{{ 'Active' if u.is_active else 'Inactive' }}</span>
+                    </h3>
+                    <p>{{ u.email }}</p>
+                    <p>Joined {{ u.created_at.strftime('%d %b %Y') }} &middot;
+                       {{ u.appointment_count }} appointment{{ '' if u.appointment_count == 1 else 's' }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    <form method="post" action="{{ url_for('admin.account_toggle', user_id=u.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-small {{ 'btn-outline' if u.is_active else 'btn-primary' }}">
+                            {{ 'Deactivate' if u.is_active else 'Activate' }}
+                        </button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No customers yet</h2>
+            <p>Customer accounts appear here after people register.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule &middot; {{ barber.display_name }} &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Weekly schedule</h1>
+        <p>{{ barber.display_name }} &middot; Tick the days this barber works and set the hours. Appointments that are already booked do not change.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <form class="form-card schedule-form" method="post" action="{{ request.path }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for d in week %}
+            <div class="day-row">
+                <label class="check-item">
+                    <input type="checkbox" name="working_{{ d.number }}" {{ 'checked' if d.working }}>
+                    {{ d.name }}
+                </label>
+                <input type="time" name="start_{{ d.number }}" value="{{ d.start }}" step="1800"
+                       aria-label="{{ d.name }} start time">
+                <span class="to">to</span>
+                <input type="time" name="end_{{ d.number }}" value="{{ d.end }}" step="1800"
+                       aria-label="{{ d.name }} end time">
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Save schedule</button>
+            <a class="btn btn-outline" href="{{ url_for('admin.barbers') }}">Cancel</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

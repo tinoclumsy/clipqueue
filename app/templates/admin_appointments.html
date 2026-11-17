@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+
+{# A macro is a reusable piece of HTML, like a function. This one draws one action button. #}
+{% macro action_button(a, action, label, style, filters) %}
+<form method="post" action="{{ url_for('admin.appointment_action', appointment_id=a.id, action=action) }}"
+      {% if action == 'cancel' %}onsubmit="return confirm('Cancel this appointment?');"{% endif %}>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {# keep the current filters, so the list looks the same after the click #}
+    {% for key, value in filters.items() %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <button type="submit" class="btn {{ style }} btn-small">{{ label }}</button>
+</form>
+{% endmacro %}
+
+<section class="page-header">
+    <div class="container">
+        <h1>Appointments</h1>
+        <p>Confirm, complete or cancel customer bookings.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+
+        <form class="filter-bar" method="get" action="{{ url_for('admin.appointments') }}">
+            <label>Status
+                <select name="status">
+                    <option value="">All</option>
+                    {% for s in statuses %}
+                    <option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Date
+                <input type="date" name="date" value="{{ filters.date or '' }}">
+            </label>
+
+            <label>Barber
+                <select name="barber_id">
+                    <option value="">All</option>
+                    {% for b in barbers %}
+                    <option value="{{ b.id }}" {% if filters.barber_id == b.id|string %}selected{% endif %}>{{ b.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="check">
+                <input type="checkbox" name="past" value="1" {% if filters.past %}checked{% endif %}>
+                Include past days
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-small">Apply filters</button>
+            <a class="btn btn-outline btn-small" href="{{ url_for('admin.appointments') }}">Reset</a>
+        </form>
+
+        {% if appointments %}
+        <p class="empty-note">Showing {{ appointments|length }} appointment(s).</p>
+        <div class="appt-list">
+            {% for a in appointments %}
+            <article class="appt">
+                <div>
+                    <h3>{{ a.service_name }} <span class="status status-{{ a.status }}">{{ a.status|capitalize }}</span></h3>
+                    <p>{{ a.appointment_date.strftime('%a, %d %b %Y') }} &middot; {{ a.start_label }} - {{ a.end_label }}</p>
+                    <p>{{ a.customer_name }} &middot; with {{ a.barber_name }} &middot; Ref: {{ a.booking_reference }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    {% if a.status == 'pending' %}
+                        {{ action_button(a, 'confirm', 'Confirm', 'btn-primary', filters) }}
+                        {{ action_button(a, 'cancel', 'Cancel', 'btn-outline', filters) }}
+                    {% elif a.status == 'confirmed' %}
+                        {% if a.appointment_date <= today %}
+                        {{ action_button(a, 'complete', 'Complete', 'btn-primary', filters) }}
+                        {% endif %}
+                        {{ action_button(a, 'cancel', 'Cancel', 'btn-outline', filters) }}
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No appointments found</h2>
+            <p>Try different filters, or tick "Include past days".</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

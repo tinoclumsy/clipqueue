@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Choose a Time &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Book an Appointment</h1>
+        <p>Step 3 of 3: choose a time.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-card">
+            <div class="booking-summary">
+                <strong>{{ service.name }}</strong>
+                <span>{{ date_label }}</span>
+            </div>
+            <p class="booking-line"><strong>Barber:</strong> {{ barber_label }}</p>
+
+            {% if times %}
+            <form method="post" action="{{ url_for('booking.create') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="service_id" value="{{ service.id }}">
+                <input type="hidden" name="barber_id" value="{{ barber_choice }}">
+                <input type="hidden" name="date" value="{{ date_iso }}">
+
+                <p class="field-title">Available times (click one to book it)</p>
+                <div class="time-grid">
+                    {% for slot in times %}
+                    <button type="submit" name="start" value="{{ slot.value }}" class="time-btn">{{ slot.label }}</button>
+                    {% endfor %}
+                </div>
+            </form>
+            {% else %}
+            <p>There are no free times on this date. Please try another date or barber.</p>
+            {% endif %}
+
+            <p class="form-note"><a href="{{ url_for('booking.choose_barber_and_date', service_id=service.id) }}">&larr; Change barber or date</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

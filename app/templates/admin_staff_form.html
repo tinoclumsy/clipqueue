@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Add a staff account &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Add a staff account</h1>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <form class="form-card" method="post" action="{{ request.path }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="full_name">Full name</label>
+            <input type="text" id="full_name" name="full_name"
+                   value="{{ values.full_name }}" maxlength="100" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   value="{{ values.email }}" maxlength="120" required>
+
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+                {% for r in roles %}
+                <option value="{{ r }}" {{ 'selected' if values.role == r }}>{{ r|capitalize }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="password">Password (at least 8 characters)</label>
+            <input type="password" id="password" name="password"
+                   autocomplete="new-password" minlength="8" required>
+
+            <label for="confirm_password">Confirm password</label>
+            <input type="password" id="confirm_password" name="confirm_password"
+                   autocomplete="new-password" minlength="8" required>
+
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <a class="btn btn-outline" href="{{ url_for('admin.accounts') }}">Cancel</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

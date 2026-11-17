@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Customer Feedback</h1>
+        <p>What customers say about their visits. Staff review every comment before it is shown here.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        {% if summary.total %}
+        <p class="status-box">
+            <strong>&#9733; {{ summary.average }} / 5</strong>
+            <span>average from {{ summary.total }} review{{ '' if summary.total == 1 else 's' }}</span>
+        </p>
+        {% endif %}
+
+        {% if reviews %}
+        <div class="grid section-gap">
+            {% for r in reviews %}
+            <article class="card">
+                <span class="badge">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</span>
+                <p>{{ r.comment }}</p>
+                <p class="specialties">
+                    <strong>{{ r.reviewer }}</strong>
+                    &middot; {{ r.service_name or 'Visit' }}{% if r.barber_name %} with {{ r.barber_name }}{% endif %}
+                    &middot; {{ r.created_at.strftime('%d %b %Y') }}
+                </p>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No feedback yet</h2>
+            <p>Approved feedback will appear here.</p>
+        </div>
+        {% endif %}
+
+        <p class="empty-note section-gap">
+            Want to share how your visit went? After a completed appointment, open My Dashboard and click <strong>Leave feedback</strong>.
+        </p>
+        {% if current_user and current_user.role == 'customer' %}
+        <a class="btn btn-outline" href="{{ url_for('auth.dashboard') }}">Go to My Dashboard</a>
+        {% elif not current_user %}
+        <a class="btn btn-outline" href="{{ url_for('auth.login') }}">Log in</a>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

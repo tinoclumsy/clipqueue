@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Review Feedback</h1>
+        <p>Approve feedback to show it on the public Feedback page. Rejected feedback stays hidden.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+
+        {% set status_class = {'pending': 'status-pending',
+                               'approved': 'status-confirmed',
+                               'rejected': 'status-cancelled'} %}
+
+        <div class="toolbar appt-actions">
+            <a class="btn btn-small {{ 'btn-primary' if not current_status else 'btn-outline' }}"
+               href="{{ url_for('admin.feedback_review') }}">All</a>
+            {% for s in statuses %}
+            <a class="btn btn-small {{ 'btn-primary' if current_status == s else 'btn-outline' }}"
+               href="{{ url_for('admin.feedback_review', status=s) }}">{{ s|capitalize }}</a>
+            {% endfor %}
+        </div>
+
+        {% if feedback %}
+        <div class="appt-list">
+            {% for f in feedback %}
+            <article class="appt">
+                <div>
+                    <h3>{{ '★' * f.rating }}{{ '☆' * (5 - f.rating) }}
+                        <span class="status {{ status_class[f.status] }}">{{ f.status|capitalize }}</span>
+                    </h3>
+                    <p>{{ f.comment }}</p>
+                    <p>{{ f.customer_name }}
+                       &middot; {{ f.service_name or 'Visit' }}{% if f.barber_name %} with {{ f.barber_name }}{% endif %}
+                       &middot; {{ f.created_at.strftime('%d %b %Y') }}
+                       {% if f.booking_reference %}&middot; Ref: {{ f.booking_reference }}{% endif %}</p>
+                </div>
+
+                <div class="appt-actions">
+                    {% if f.status != 'approved' %}
+                    <form method="post" action="{{ url_for('admin.feedback_action', feedback_id=f.id, action='approve') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="{{ current_status }}">
+                        <button type="submit" class="btn btn-primary btn-small">Approve</button>
+                    </form>
+                    {% endif %}
+
+                    {% if f.status != 'rejected' %}
+                    <form method="post" action="{{ url_for('admin.feedback_action', feedback_id=f.id, action='reject') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="{{ current_status }}">
+                        <button type="submit" class="btn btn-outline btn-small">Reject</button>
+                    </form>
+                    {% endif %}
+
+                    {% if f.status != 'pending' %}
+                    <form method="post" action="{{ url_for('admin.feedback_action', feedback_id=f.id, action='reset') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="{{ current_status }}">
+                        <button type="submit" class="btn btn-outline btn-small">Back to pending</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No feedback here</h2>
+            <p>Feedback sent by customers will appear here.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

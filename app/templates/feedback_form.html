@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Leave feedback &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Leave feedback</h1>
+        <p>Tell us how your visit went. Staff review feedback before it is shown on the Feedback page.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <form class="form-card" method="post" action="{{ request.path }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="booking-summary">
+                <div>
+                    {{ appointment.service_name }}<br>
+                    with {{ appointment.barber_name }}
+                </div>
+                <span>{{ appointment.appointment_date.strftime('%d %b %Y') }}</span>
+            </div>
+
+            <label for="rating">Rating</label>
+            <select id="rating" name="rating" required>
+                <option value="">Choose a rating</option>
+                {% for n, label in [(5, 'Excellent'), (4, 'Good'), (3, 'Okay'), (2, 'Poor'), (1, 'Very poor')] %}
+                <option value="{{ n }}" {{ 'selected' if values.rating == n|string }}>{{ n }} - {{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="comment">Your comment</label>
+            <textarea id="comment" name="comment" rows="5" maxlength="1000" required>{{ values.comment }}</textarea>
+
+            <button type="submit" class="btn btn-primary">Send feedback</button>
+            <a class="btn btn-outline" href="{{ url_for('auth.dashboard') }}">Cancel</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

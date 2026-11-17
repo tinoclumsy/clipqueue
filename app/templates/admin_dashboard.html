@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>{{ "Administrator" if current_user.role == "administrator" else "Staff" }} Dashboard</h1>
+        <p>Welcome, {{ current_user.full_name }}.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <div class="grid">
+            <article class="card">
+                <div class="stat-number">{{ counts.today_total }}</div>
+                <h3>Appointments today</h3>
+            </article>
+
+            <article class="card">
+                <div class="stat-number">{{ counts.pending_total }}</div>
+                <h3>Pending requests</h3>
+                <a class="card-link" href="{{ url_for('admin.appointments', status='pending') }}">Review pending</a>
+            </article>
+
+            <article class="card">
+                <div class="stat-number">{{ counts.customer_total }}</div>
+                <h3>Active customers</h3>
+            </article>
+
+            <article class="card">
+                <div class="stat-number">{{ counts.barber_total }}</div>
+                <h3>Active barbers</h3>
+            </article>
+        </div>
+
+        <h2 class="section-title section-gap">Today's appointments</h2>
+        {% if todays %}
+        <div class="appt-list">
+            {% for a in todays %}
+            <article class="appt">
+                <div>
+                    <h3>{{ a.service_name }} <span class="status status-{{ a.status }}">{{ a.status|capitalize }}</span></h3>
+                    <p>{{ a.start_label }} - {{ a.end_label }} &middot; {{ a.customer_name }}</p>
+                    <p>with {{ a.barber_name }} &middot; Ref: {{ a.booking_reference }}</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-note">No appointments today.</p>
+        {% endif %}
+
+        <p class="empty-note">More management tools will appear here as we build them.</p>
+    </div>
+</section>
+{% endblock %}

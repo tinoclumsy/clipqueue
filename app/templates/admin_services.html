@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Services &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Manage Services</h1>
+        <p>Add, edit, switch services on and off, or delete them. A service that already has appointments cannot be deleted, so switch it off instead.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <div class="toolbar">
+            <a class="btn btn-primary" href="{{ url_for('admin.service_new') }}">Add a service</a>
+        </div>
+
+        {% if services %}
+        <div class="appt-list">
+            {% for s in services %}
+            <article class="appt {{ 'is-inactive' if not s.is_active }}">
+                <div>
+                    <h3>{{ s.name }}
+                        <span class="status {{ 'status-confirmed' if s.is_active else 'status-cancelled' }}">{{ 'Active' if s.is_active else 'Inactive' }}</span>
+                    </h3>
+                    <p>{{ currency }}{{ "%.2f"|format(s.price) }} &middot; {{ s.duration_minutes }} min</p>
+                    <p>{{ s.description or "No description." }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    <a class="btn btn-outline btn-small" href="{{ url_for('admin.service_edit', service_id=s.id) }}">Edit</a>
+                    <form method="post" action="{{ url_for('admin.service_toggle', service_id=s.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-small {{ 'btn-outline' if s.is_active else 'btn-primary' }}">
+                            {{ 'Deactivate' if s.is_active else 'Activate' }}
+                        </button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.service_delete', service_id=s.id) }}"
+                          onsubmit="return confirm('Delete this service permanently? This cannot be undone.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline btn-small">Delete</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No services yet</h2>
+            <p>Click "Add a service" to create the first one.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Barbers &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Manage Barbers</h1>
+        <p>Add, edit, switch barbers on and off, or delete them. A barber who already has appointments cannot be deleted, so switch them off instead.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <div class="toolbar">
+            <a class="btn btn-primary" href="{{ url_for('admin.barber_new') }}">Add a barber</a>
+        </div>
+
+        {% if barbers %}
+        <div class="appt-list">
+            {% for b in barbers %}
+            <article class="appt {{ 'is-inactive' if not b.is_active }}">
+                <div>
+                    <h3>{{ b.display_name }}
+                        <span class="status {{ 'status-confirmed' if b.is_active else 'status-cancelled' }}">{{ 'Active' if b.is_active else 'Inactive' }}</span>
+                    </h3>
+                    <p>{{ b.barber_type|capitalize }}</p>
+                    <p>{{ b.bio or "No bio yet." }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    <a class="btn btn-outline btn-small" href="{{ url_for('admin.barber_edit', barber_id=b.id) }}">Edit</a>
+                    <a class="btn btn-outline btn-small" href="{{ url_for('admin.barber_schedule', barber_id=b.id) }}">Schedule</a>
+                    <form method="post" action="{{ url_for('admin.barber_toggle', barber_id=b.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-small {{ 'btn-outline' if b.is_active else 'btn-primary' }}">
+                            {{ 'Deactivate' if b.is_active else 'Activate' }}
+                        </button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.barber_delete', barber_id=b.id) }}"
+                          onsubmit="return confirm('Delete this barber permanently? This cannot be undone.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline btn-small">Delete</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No barbers yet</h2>
+            <p>Click "Add a barber" to create the first one.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

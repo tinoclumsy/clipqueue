@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Info &amp; FAQ &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Shop Info &amp; FAQ</h1>
+        <p>Where to find us, when we are open, and answers to common questions.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        {% if shop %}
+        <p class="status-box">
+            <span class="status {{ 'status-confirmed' if shop.is_open else 'status-cancelled' }}">
+                {{ 'Open' if shop.is_open else 'Closed' }}
+            </span>
+            <span>
+                {% if shop.status_note %}{{ shop.status_note }}{% elif shop.is_open %}Come in, we are open.{% else %}We are closed right now.{% endif %}
+            </span>
+        </p>
+
+        {% if shop.about_text %}
+        <h2 class="section-title section-gap">About us</h2>
+        <p>{{ shop.about_text }}</p>
+        {% endif %}
+
+        <h2 class="section-title section-gap">Find us</h2>
+        <div class="grid">
+            <article class="card">
+                <h3>Address</h3>
+                <p>{{ shop.address or "Not added yet." }}</p>
+            </article>
+            <article class="card">
+                <h3>Phone</h3>
+                <p>{{ shop.phone or "Not added yet." }}</p>
+            </article>
+            <article class="card">
+                <h3>Email</h3>
+                <p>{{ shop.email or "Not added yet." }}</p>
+            </article>
+            <article class="card">
+                <h3>Opening hours</h3>
+                <p>{{ shop.hours_text or "Not added yet." }}</p>
+            </article>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>Shop details are not set up yet</h2>
+            <p>Please check back soon.</p>
+        </div>
+        {% endif %}
+
+        <h2 class="section-title section-gap">Frequently asked questions</h2>
+        {% if faqs %}
+        <div class="appt-list">
+            {% for f in faqs %}
+            <details class="card">
+                <summary><strong>{{ f.question }}</strong></summary>
+                <p>{{ f.answer }}</p>
+            </details>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-note">No questions have been added yet.</p>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

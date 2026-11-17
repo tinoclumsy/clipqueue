@@ -1,0 +1,78 @@
+/* Styles for the messages made by validation.js */
+
+/* the red message under a field. :empty hides it when there is no message */
+.field-error {
+    margin-top: 0.3rem;
+    color: #e6a5a5;
+    font-size: 0.85rem;
+}
+
+.field-error:empty {
+    display: none;
+}
+
+/* a field with a problem gets a red border */
+.form-card input.is-invalid,
+.form-card select.is-invalid,
+.form-card textarea.is-invalid {
+    border-color: #b54a4a;
+}
+
+/* "12 / 1000" under long text boxes */
+.char-count {
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.char-count.is-near-limit {
+    color: var(--accent);
+}
+
+/* the password strength bar */
+.strength {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+.strength-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+}
+
+/* the coloured part grows with the score (0 to 5) */
+.strength-bar::after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: calc(var(--score, 0) * 20%);
+    background: #b54a4a;
+    transition: width 0.2s, background 0.2s;
+}
+
+.strength-bar[data-level="okay"]::after {
+    background: var(--accent);
+}
+
+.strength-bar[data-level="strong"]::after {
+    background: #4f9d69;
+}
+
+.strength-text {
+    min-width: 3.5rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+/* a button that was just clicked */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

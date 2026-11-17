@@ -1,0 +1,22 @@
+<nav class="admin-tabs">
+    <div class="container">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="{{ 'active' if request.endpoint == 'admin.dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('admin.appointments') }}"
+           class="{{ 'active' if request.endpoint == 'admin.appointments' }}">Appointments</a>
+        <a href="{{ url_for('admin.shop') }}"
+           class="{{ 'active' if request.endpoint == 'admin.shop' }}">Shop</a>
+         <a href="{{ url_for('admin.feedback_review') }}"
+           class="{{ 'active' if request.endpoint == 'admin.feedback_review' }}">Feedback</a>
+        {% if current_user.role == 'administrator' %}
+        <a href="{{ url_for('admin.services') }}"
+           class="{{ 'active' if request.endpoint in ['admin.services', 'admin.service_new', 'admin.service_edit'] }}">Services</a>
+        <a href="{{ url_for('admin.barbers') }}"
+           class="{{ 'active' if request.endpoint in ['admin.barbers', 'admin.barber_new', 'admin.barber_edit', 'admin.barber_schedule'] }}">Barbers</a>
+        <a href="{{ url_for('admin.faqs') }}"
+           class="{{ 'active' if request.endpoint in ['admin.faqs', 'admin.faq_new', 'admin.faq_edit'] }}">FAQs</a>
+        <a href="{{ url_for('admin.accounts') }}"
+           class="{{ 'active' if request.endpoint in ['admin.accounts', 'admin.staff_new'] }}">Accounts</a>
+        {% endif %}
+    </div>
+</nav>

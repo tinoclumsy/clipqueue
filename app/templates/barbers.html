@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Barbers &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Our Barbers</h1>
+        <p>Meet the barbers and see their experience and specialties.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if barbers %}
+        <div class="grid">
+            {% for barber in barbers %}
+            <article class="card">
+                <h3>{{ barber.display_name }}</h3>
+                <span class="badge">{{ "Owner" if barber.barber_type == "owner" else "Independent barber" }}</span>
+                <p>{{ barber.bio or "No profile yet." }}</p>
+
+                {% if barber.specialties %}
+                <p class="specialties"><strong>Specialties:</strong> {{ barber.specialties }}</p>
+                {% else %}
+                <p class="specialties">No specialties listed yet.</p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No barbers yet</h2>
+            <p>No barbers are available right now. Please check back soon.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

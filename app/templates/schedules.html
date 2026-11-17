@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Schedules &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Barber Schedules</h1>
+        <p>Usual weekly working days and hours. These are not appointment slots.</p>
+        <p> This is weekly updated by the barbers themselves, so check back often to see if anything has changed.</p>
+        <p> Weekly schedules are subject to change, so if you have preferences please check with the barbers directly for the most up-to-date information. 
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if schedules %}
+        <div class="grid schedule-grid">
+            {% for barber in schedules %}
+            <article class="card">
+                <h3>{{ barber.name }}</h3>
+
+                {% if barber.has_schedule %}
+                <table class="schedule-table">
+                    <tbody>
+                        {% for day in barber.week %}
+                        <tr>
+                            <th scope="row">{{ day.day }}</th>
+                            {% if day.hours %}
+                            <td>{{ day.hours }}</td>
+                            {% else %}
+                            <td class="day-off">Day off</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No schedule has been set yet.</p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No schedules yet</h2>
+            <p>No barber schedules are available right now. Please check back soon.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

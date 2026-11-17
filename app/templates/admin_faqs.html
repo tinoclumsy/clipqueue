@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}FAQs &middot; Admin &middot; ClipQueue{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Manage FAQs</h1>
+        <p>Add, edit, hide, or delete the questions shown on the Shop Info page. Hide a question if you may want to show it again later.</p>
+    </div>
+</section>
+
+{% include "_admin_nav.html" %}
+
+<section class="section">
+    <div class="container">
+        <div class="toolbar">
+            <a class="btn btn-primary" href="{{ url_for('admin.faq_new') }}">Add a FAQ</a>
+        </div>
+
+        {% if faqs %}
+        <div class="appt-list">
+            {% for f in faqs %}
+            <article class="appt {{ 'is-inactive' if not f.is_active }}">
+                <div>
+                    <h3>{{ f.question }}
+                        <span class="status {{ 'status-confirmed' if f.is_active else 'status-cancelled' }}">{{ 'Shown' if f.is_active else 'Hidden' }}</span>
+                    </h3>
+                    <p>{{ f.answer }}</p>
+                    <p>Display order: {{ f.sort_order }}</p>
+                </div>
+
+                <div class="appt-actions">
+                    <a class="btn btn-outline btn-small" href="{{ url_for('admin.faq_edit', faq_id=f.id) }}">Edit</a>
+                    <form method="post" action="{{ url_for('admin.faq_toggle', faq_id=f.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-small {{ 'btn-outline' if f.is_active else 'btn-primary' }}">
+                            {{ 'Hide' if f.is_active else 'Show' }}
+                        </button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.faq_delete', faq_id=f.id) }}"
+                          onsubmit="return confirm('Delete this FAQ permanently? This cannot be undone.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline btn-small">Delete</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No FAQs yet</h2>
+            <p>Click "Add a FAQ" to create the first one.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
