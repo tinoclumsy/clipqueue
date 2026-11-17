@@ -71,7 +71,7 @@ You need Python 3.10 or newer, MySQL 8, and Git.
 **1. Get the code**
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/clipqueue.git
+git clone https://github.com/tinoclumsy/clipqueue.git
 cd clipqueue
 ```
 
